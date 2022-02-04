@@ -7,13 +7,27 @@
   "author": "Benjamin Lepas <mail@benjaminlepas.fr> (https://benjaminlepas.fr)",
   "license": "MIT",
   "private": false,
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "lint": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
   },
-  "dependencies": {},
+  "dependencies": {
+    "chalk": "4.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "morgan": "^1.10.0"
+  },
   "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.14",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
