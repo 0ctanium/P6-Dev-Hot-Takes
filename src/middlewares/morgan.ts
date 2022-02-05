@@ -87,7 +87,8 @@ function formatResponseTime(time?: string): string | undefined {
             formatter = chalk.whiteBright.red;
         }
 
-        return formatter(minLength(`${time}ms`, 10));
+        // min length is enough for an hour of response time
+        return formatter(minLength(`${time}ms`, 11));
     }
     return undefined;
 }
