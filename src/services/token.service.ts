@@ -1,7 +1,7 @@
 import { Token, UserType } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
-import { TOKEN_EXPIRY, TOKEN_SECRET } from '../config';
+import { TOKEN_ALGORITHM, TOKEN_EXPIRY, TOKEN_SECRET } from '../config';
 
 export const generateToken = (user: UserType): Token => {
     const tokenId = uuidv4();
@@ -21,7 +21,7 @@ export const generateToken = (user: UserType): Token => {
         TOKEN_SECRET,
         {
             expiresIn: TOKEN_EXPIRY,
-            algorithm: 'HS256',
+            algorithm: TOKEN_ALGORITHM,
         }
     );
 

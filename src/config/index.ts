@@ -31,3 +31,5 @@ function normalizePort(val: string) {
 }
 
 export const PORT = normalizePort(process.env.PORT || '3000');
+
+export const TOKEN_ALGORITHM = 'HS256';
