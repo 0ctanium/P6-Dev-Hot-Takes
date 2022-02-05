@@ -1,5 +1,5 @@
 import express from 'express';
-import { router } from './routes';
+import router from './routes';
 import cors from 'cors';
 import { morgan } from './middlewares';
 import path from 'path';

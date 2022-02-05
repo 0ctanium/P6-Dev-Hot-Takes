@@ -7,3 +7,4 @@ export interface BaseDocument extends mongoose.Document {
 
 export * from './user';
 export * from './sauce';
+export * from './auth';
