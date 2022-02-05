@@ -1,9 +1,13 @@
 import { RequestHandler } from 'express';
-import { ApiResponse, SignUpInput } from '../types';
-import { signUpInputSchema } from '../helpers/validators/auth';
-import { ApiCode } from '../constants/api_codes';
-import { createUser } from '../services/user.service';
+import { ApiResponse, LoginInput, LoginOutput, SignUpInput } from '../types';
+import {
+    loginInputSchema,
+    signUpInputSchema,
+} from '../helpers/validators/auth';
+import { createUser, getUserByEmail } from '../services/user.service';
 import { joiErrorToMessage } from '../helpers/formatter';
+import { compare } from 'bcrypt';
+import { generateToken } from '../services/token.service';
 
 export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
     req,
@@ -15,7 +19,6 @@ export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
         console.log(error);
         res.status(422).json({
             message: joiErrorToMessage(error),
-            code: ApiCode.BAD_REQUEST,
         });
         return;
     }
@@ -23,7 +26,6 @@ export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
     if (!value) {
         res.status(400).json({
             message: 'Value is empty',
-            code: ApiCode.BAD_REQUEST,
         });
         return;
     }
@@ -32,20 +34,17 @@ export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
         email: value.email,
         password: value.password,
     })
-        .then((user) => {
+        .then(() => {
             res.status(201).json({
                 message: 'User created successfully',
-                code: ApiCode.USER_CREATED,
-                data: user._id,
             });
             return;
         })
         .catch((err) => {
             if (err.code === 11000) {
                 // Handle duplicates
-                res.status(500).json({
+                res.status(409).json({
                     message: 'User already exists',
-                    code: ApiCode.USER_ALREADY_CREATED,
                 });
             } else {
                 if (err instanceof Error) {
@@ -53,17 +52,64 @@ export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
                     console.error(err);
                     res.status(500).json({
                         message: err.message,
-                        code: ApiCode.INTERNAL_ERROR,
                     });
                 } else {
                     // Unknown error
                     console.error(err);
                     res.status(500).json({
                         message: 'Unknown error',
-                        code: ApiCode.UNKNOWN_ERROR,
                     });
                 }
             }
             return;
         });
+};
+
+export const login: RequestHandler<
+    unknown,
+    ApiResponse<LoginOutput>,
+    LoginInput
+> = async (req, res) => {
+    const { value, error } = loginInputSchema.validate(req.body);
+    const valid = error == null;
+    if (!valid) {
+        console.log(error);
+        res.status(422).json({
+            message: joiErrorToMessage(error),
+        });
+        return;
+    }
+
+    if (!value) {
+        res.status(400).json({
+            message: 'Value is empty',
+        });
+        return;
+    }
+
+    const user = await getUserByEmail(value.email);
+
+    if (!user || !user._id) {
+        res.status(404).json({
+            message: 'User not found',
+        });
+        return;
+    }
+
+    const passwordValid = await compare(value.password, user.password);
+    if (!passwordValid) {
+        res.status(403).json({
+            message: 'Bad credentials',
+        });
+        return;
+    }
+
+    const { token, tokenId } = generateToken(user);
+
+    res.status(201).json({
+        message: 'Successfully authenticated',
+        userId: user._id,
+        token,
+        tokenId,
+    });
 };

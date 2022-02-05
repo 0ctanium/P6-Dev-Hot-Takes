@@ -1,10 +1,12 @@
+import { ObjectId } from 'mongoose';
+
 export interface Token {
     // Token id stored into the cache
     tokenId: string;
     // Token
     token: string;
-    // Refresh token
-    refreshToken: string;
+    // // Refresh token
+    // refreshToken: string;
 }
 
 export interface SignUpInput {
@@ -23,5 +25,5 @@ export interface LoginInput {
 
 export interface LoginOutput extends Token {
     // User object _id
-    userId: string;
+    userId: ObjectId;
 }
