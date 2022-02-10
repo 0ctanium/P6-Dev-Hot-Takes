@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { SauceType } from '../types';
+import { SauceType } from 'types';
 
 export const SauceSchema = new Schema<SauceType>(
     {

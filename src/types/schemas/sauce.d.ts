@@ -1,5 +1,5 @@
-import { BaseDocument, UserType } from './index';
 import { PopulatedDoc } from 'mongoose';
+import { BaseDocument, UserType } from './index';
 
 export interface SauceType extends BaseDocument {
     user: PopulatedDoc<UserType>;

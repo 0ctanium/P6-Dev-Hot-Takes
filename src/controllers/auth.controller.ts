@@ -1,18 +1,11 @@
-import { RequestHandler } from 'express';
-import { ApiResponse, LoginInput, LoginOutput, SignUpInput } from '../types';
-import {
-    loginInputSchema,
-    signUpInputSchema,
-} from '../helpers/validators/auth';
-import { createUser, getUserByEmail } from '../services/user.service';
-import { joiErrorToMessage } from '../helpers/formatter';
 import { compare } from 'bcrypt';
-import { generateToken } from '../services/token.service';
-import {
-    ApplicationError,
-    InternalError,
-    ResourceNotFoundError,
-} from '../errors';
+import { RequestHandler } from 'express';
+import { ApplicationError, InternalError, ResourceNotFoundError } from 'errors';
+import { joiErrorToMessage } from 'helpers/formatter';
+import { loginInputSchema, signUpInputSchema } from 'helpers/validators/auth';
+import { generateToken } from 'services/token.service';
+import { createUser, getUserByEmail } from 'services/user.service';
+import { ApiResponse, LoginInput, LoginOutput, SignUpInput } from 'types';
 
 export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
     req,

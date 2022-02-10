@@ -1,8 +1,8 @@
-import express from 'express';
-import { addSauce } from '../controllers/sauce.controller';
-import { requireAuth, sauceImage } from '../middlewares';
+import { Router } from 'express';
+import { addSauce } from 'controllers/sauce.controller';
+import { requireAuth, sauceImage } from 'middlewares';
 
-const router = express.Router();
+const router = Router();
 
 router.post('/', requireAuth, sauceImage.single('image'), addSauce);
 

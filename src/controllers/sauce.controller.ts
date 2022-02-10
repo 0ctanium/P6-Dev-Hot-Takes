@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
-import { SauceInput } from '../types';
-import { sauceInputSchema } from '../helpers/validators/sauce';
-import { joiErrorToMessage } from '../helpers/formatter';
-import { ApplicationError } from '../errors';
+import { ApplicationError } from 'errors';
+import { joiErrorToMessage } from 'helpers/formatter';
+import { sauceInputSchema } from 'helpers/validators/sauce';
+import { SauceInput } from 'types';
 
 export const addSauce: RequestHandler = (req, res, next) => {
     const { body, file, user } = req;

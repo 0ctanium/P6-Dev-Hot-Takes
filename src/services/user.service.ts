@@ -1,6 +1,6 @@
-import { User } from '../models';
-import { UserInput } from '../types';
-import { hashPassword } from '../helpers/string';
+import { hashPassword } from 'helpers/string';
+import { User } from 'models';
+import { UserInput } from 'types';
 
 export const getUserById = async (id: string) => {
     return User.findOne({ _id: id });

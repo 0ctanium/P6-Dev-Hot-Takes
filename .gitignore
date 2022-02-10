@@ -190,3 +190,4 @@ dist
 .pnp.*
 
 data
+coverage-ts

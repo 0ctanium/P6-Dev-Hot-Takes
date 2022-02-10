@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { SauceInput } from '../../types';
+import { SauceInput } from 'types';
 
 export const sauceInputSchema = Joi.object<SauceInput>({
     name: Joi.string().required(),

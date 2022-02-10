@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk, { Chalk } from 'chalk';
 import morganMiddleware from 'morgan';
 
 function minLength(s: string, l: number) {
@@ -10,7 +10,7 @@ function minLength(s: string, l: number) {
 
 function formatMethod(method?: string): string | undefined {
     if (method) {
-        let formatter;
+        let formatter: Chalk;
 
         switch (method) {
             case 'PUT':
@@ -48,7 +48,7 @@ function formatMethod(method?: string): string | undefined {
 
 function formatStatus(status?: string): string | undefined {
     if (status) {
-        let formatter;
+        let formatter: Chalk;
         const group = status.charAt(0);
 
         switch (group) {
@@ -77,7 +77,7 @@ function formatStatus(status?: string): string | undefined {
 function formatResponseTime(time?: string): string | undefined {
     if (time) {
         const f = parseFloat(time);
-        let formatter;
+        let formatter: Chalk;
 
         if (f <= 500) {
             formatter = chalk.whiteBright.green;

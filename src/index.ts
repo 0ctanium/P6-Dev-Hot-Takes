@@ -1,9 +1,9 @@
 import 'dotenv/config';
 
-import { DB_URI, PORT } from './config';
-import { app } from './app';
 import * as http from 'http';
 import mongoose from 'mongoose';
+import { app } from './app';
+import { DB_URI, PORT } from './config';
 
 (async () => {
     // Connect to MongoDB
