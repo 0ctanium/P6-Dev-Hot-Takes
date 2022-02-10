@@ -24,3 +24,18 @@ export interface SauceType extends BaseDocument {
     // Table of user IDs who disliked the sauce
     usersDislike: PopulatedDoc<UserType>[];
 }
+
+export interface SauceInput {
+    // Sauce name
+    name: string;
+    // Sauce manufacturer
+    manufacturer: string;
+    // Sauce description
+    description: string;
+    // The main spicy ingredient of the sauce
+    mainPepper: string;
+    // Number between 1 and 10 describing the water
+    heat: number;
+
+    userId?: string;
+}
