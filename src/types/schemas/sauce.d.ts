@@ -22,7 +22,7 @@ export interface SauceType extends BaseDocument {
     // Table of user IDs who liked the sauce
     usersLiked: PopulatedDoc<UserType>[];
     // Table of user IDs who disliked the sauce
-    usersDislike: PopulatedDoc<UserType>[];
+    usersDisliked: PopulatedDoc<UserType>[];
 }
 
 export interface SauceInput {

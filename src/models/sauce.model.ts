@@ -39,9 +39,15 @@ export const SauceSchema = new Schema<SauceType>(
             required: true,
         },
         usersLiked: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-        usersDislike: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        usersDisliked: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     },
     { timestamps: true }
 );
+
+SauceSchema.pre('validate', function (next) {
+    this.likes = this.usersLiked.length;
+    this.dislikes = this.usersDisliked.length;
+    next();
+});
 
 export const Sauce = model<SauceType>('Sauce', SauceSchema);
