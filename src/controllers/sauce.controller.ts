@@ -1,11 +1,49 @@
 import { RequestHandler } from 'express';
 import { ApplicationError, InternalError } from '@errors';
 import { joiErrorToMessage } from '@helpers';
-import { createSauce } from '@services';
+import * as sauceService from '@services/sauce.service';
 import { SauceInput } from '@types';
 import { sauceInputSchema } from '@validators';
 
-export const addSauce: RequestHandler = (req, res, next) => {
+export const getAllSauces: RequestHandler = (req, res, next) => {
+    const { user } = req;
+
+    if (!user) {
+        return next(new ApplicationError('Authentication required', 401));
+    }
+    sauceService
+        .getAllSauces()
+        .then((sauces) => {
+            return res.status(200).json(sauces);
+        })
+        .catch((err) => {
+            return next(new InternalError(err));
+        });
+};
+
+export const getSauceById: RequestHandler<{ sauceId: string }> = (
+    req,
+    res,
+    next
+) => {
+    const { user } = req;
+    const { sauceId } = req.params;
+
+    if (!user) {
+        return next(new ApplicationError('Authentication required', 401));
+    }
+
+    sauceService
+        .getSauceById(sauceId)
+        .then((sauces) => {
+            return res.status(200).json(sauces);
+        })
+        .catch((err) => {
+            return next(new InternalError(err));
+        });
+};
+
+export const createSauce: RequestHandler = (req, res, next) => {
     const { body, file, user } = req;
 
     if (!user) {
@@ -37,7 +75,8 @@ export const addSauce: RequestHandler = (req, res, next) => {
         );
     }
 
-    createSauce(value, file.path.replace(/^data\//g, ''), user.sub)
+    sauceService
+        .createSauce(value, file.path.replace(/^data\//g, ''), user.sub)
         .then(() => {
             return res.status(201).json({
                 message: 'Sauce created successfully',

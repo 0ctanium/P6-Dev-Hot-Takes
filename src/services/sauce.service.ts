@@ -5,7 +5,7 @@ export const getSauceById = async (id: string) => {
     return Sauce.findOne({ _id: id });
 };
 
-export const findSauces = async () => {
+export const getAllSauces = async () => {
     return Sauce.find();
 };
 
