@@ -26,9 +26,7 @@ export const addSauce: RequestHandler = (req, res, next) => {
         return next(new ApplicationError('Value is empty', 400));
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (value.userId && user['sub'] !== value.userId) {
+    if (value.userId && user.sub !== value.userId) {
         return next(
             new ApplicationError('User id does not match the current user', 403)
         );
