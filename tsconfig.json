@@ -15,8 +15,10 @@
     "skipLibCheck": true,
     "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@*": ["src/*"],
+    },
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src"]
 }

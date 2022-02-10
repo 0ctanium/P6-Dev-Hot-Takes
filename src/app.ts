@@ -1,14 +1,14 @@
 import path from 'path';
 import cors from 'cors';
 import express, { RequestHandler } from 'express';
-import { ApplicationError } from './errors';
+import { ApplicationError } from '@errors';
 import {
     clientErrorHandler,
     errorHandler,
     logErrors,
     morgan,
-} from './middlewares';
-import router from './routes';
+} from '@middlewares';
+import router from '@routes';
 
 const app = express();
 

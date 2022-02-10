@@ -1,4 +1,4 @@
-import { BaseDocument } from './index';
+import { BaseDocument } from '@types';
 
 export interface UserType extends BaseDocument {
     // The unique email address of the user

@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { LoginInput, SignUpInput } from 'types';
+import { LoginInput, SignUpInput } from '@types';
 
 export const signUpInputSchema = Joi.object<SignUpInput>({
     email: Joi.string().email().required(),

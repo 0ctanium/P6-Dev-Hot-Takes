@@ -1,8 +1,9 @@
 import { RequestHandler } from 'express';
-import { ApplicationError } from 'errors';
-import { joiErrorToMessage } from 'helpers/formatter';
-import { sauceInputSchema } from 'helpers/validators/sauce';
-import { SauceInput } from 'types';
+import { ApplicationError, InternalError } from '@errors';
+import { joiErrorToMessage } from '@helpers';
+import { createSauce } from '@services';
+import { SauceInput } from '@types';
+import { sauceInputSchema } from '@validators';
 
 export const addSauce: RequestHandler = (req, res, next) => {
     const { body, file, user } = req;
@@ -11,8 +12,12 @@ export const addSauce: RequestHandler = (req, res, next) => {
         return next(new ApplicationError('Authentication required', 401));
     }
 
+    if (!file) {
+        return next(new ApplicationError('Image file is required', 422));
+    }
+
     if (!body.sauce) {
-        return next(new ApplicationError('No sauce given', 400));
+        return next(new ApplicationError('No sauce given', 422));
     }
     const sauce: SauceInput =
         typeof body.sauce === 'string' ? JSON.parse(body.sauce) : body.sauce;
@@ -32,5 +37,13 @@ export const addSauce: RequestHandler = (req, res, next) => {
         );
     }
 
-    console.log({ body, file, user });
+    createSauce(value, file.path.replace(/^data\//g, ''), user.sub)
+        .then(() => {
+            return res.status(201).json({
+                message: 'Sauce created successfully',
+            });
+        })
+        .catch((err) => {
+            return next(new InternalError(err));
+        });
 };

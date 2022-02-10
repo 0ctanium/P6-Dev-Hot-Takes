@@ -1,11 +1,14 @@
 import { compare } from 'bcrypt';
 import { RequestHandler } from 'express';
-import { ApplicationError, InternalError, ResourceNotFoundError } from 'errors';
-import { joiErrorToMessage } from 'helpers/formatter';
-import { loginInputSchema, signUpInputSchema } from 'helpers/validators/auth';
-import { generateToken } from 'services/token.service';
-import { createUser, getUserByEmail } from 'services/user.service';
-import { ApiResponse, LoginInput, LoginOutput, SignUpInput } from 'types';
+import {
+    ApplicationError,
+    InternalError,
+    ResourceNotFoundError,
+} from '@errors';
+import { joiErrorToMessage } from '@helpers';
+import { generateToken, createUser, getUserByEmail } from '@services';
+import { ApiResponse, LoginInput, LoginOutput, SignUpInput } from '@types';
+import { loginInputSchema, signUpInputSchema } from '@validators';
 
 export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
     req,

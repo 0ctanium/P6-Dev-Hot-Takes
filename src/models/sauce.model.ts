@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import { SauceType } from 'types';
+import { SauceType } from '@types';
 
 export const SauceSchema = new Schema<SauceType>(
     {
@@ -30,10 +30,12 @@ export const SauceSchema = new Schema<SauceType>(
         },
         likes: {
             type: Number,
+            default: 0,
             required: true,
         },
         dislikes: {
             type: Number,
+            default: 0,
             required: true,
         },
         usersLiked: [{ type: Schema.Types.ObjectId, ref: 'User' }],

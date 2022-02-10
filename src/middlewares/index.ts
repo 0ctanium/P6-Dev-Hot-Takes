@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import jwt from 'express-jwt';
 import mime from 'mime';
 import multer from 'multer';
-import { TOKEN_ALGORITHM, TOKEN_SECRET } from 'config';
+import { TOKEN_ALGORITHM, TOKEN_SECRET } from '@config';
 
 export * from './error';
 export * from './morgan';

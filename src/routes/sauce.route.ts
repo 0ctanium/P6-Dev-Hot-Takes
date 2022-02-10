@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { addSauce } from 'controllers/sauce.controller';
-import { requireAuth, sauceImage } from 'middlewares';
+import { addSauce } from '@controllers';
+import { requireAuth, sauceImage } from '@middlewares';
 
 const router = Router();
 
