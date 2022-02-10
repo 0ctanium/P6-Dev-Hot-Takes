@@ -2,50 +2,36 @@ import { RequestHandler } from 'express';
 import { SauceInput } from '../types';
 import { sauceInputSchema } from '../helpers/validators/sauce';
 import { joiErrorToMessage } from '../helpers/formatter';
+import { ApplicationError } from '../errors';
 
-export const addSauce: RequestHandler = (req, res) => {
+export const addSauce: RequestHandler = (req, res, next) => {
     const { body, file, user } = req;
 
     if (!user) {
-        res.status(401).json({
-            message: 'Authentication required',
-        });
-        return;
+        return next(new ApplicationError('Authentication required', 401));
     }
 
     if (!body.sauce) {
-        res.status(400).json({
-            message: 'No sauce given',
-        });
-        return;
+        return next(new ApplicationError('No sauce given', 400));
     }
     const sauce: SauceInput =
         typeof body.sauce === 'string' ? JSON.parse(body.sauce) : body.sauce;
 
     const { value, error } = sauceInputSchema.validate(sauce);
-    const valid = error == null;
-    if (!valid) {
-        console.log(error);
-        res.status(422).json({
-            message: joiErrorToMessage(error),
-        });
-        return;
+    if (error != null) {
+        return next(new ApplicationError(joiErrorToMessage(error), 422));
     }
 
     if (!value) {
-        res.status(400).json({
-            message: 'Value is empty',
-        });
-        return;
+        return next(new ApplicationError('Value is empty', 400));
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     if (value.userId && user['sub'] !== value.userId) {
-        res.status(403).json({
-            message: 'User id does not match the current user',
-        });
-        return;
+        return next(
+            new ApplicationError('User id does not match the current user', 403)
+        );
     }
 
     console.log({ body, file, user });

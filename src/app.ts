@@ -1,8 +1,14 @@
 import express, { RequestHandler } from 'express';
 import router from './routes';
 import cors from 'cors';
-import { morgan } from './middlewares';
+import {
+    clientErrorHandler,
+    errorHandler,
+    logErrors,
+    morgan,
+} from './middlewares';
 import path from 'path';
+import { ApplicationError } from './errors';
 
 const app = express();
 
@@ -19,8 +25,8 @@ app.use('/api', morgan);
 app.use('/api', router);
 
 // Handle 404 errors
-const notFound: RequestHandler = (req, res) => {
-    res.sendStatus(404);
+const notFound: RequestHandler = (req, res, next) => {
+    next(new ApplicationError('Page not found', 404));
 };
 app.all('/api/*', notFound);
 app.all('/images/*', notFound);
@@ -33,5 +39,10 @@ app.get('*', (req, res) => {
         }
     });
 });
+
+// Handle errors
+app.use(logErrors);
+app.use(clientErrorHandler);
+app.use(errorHandler);
 
 export { app };
