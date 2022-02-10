@@ -1,9 +1,11 @@
 import express from 'express';
 
 import authRouter from './auth.route';
+import sauceRouter from './sauce.route';
 
 const router = express.Router();
 router.use('/auth', authRouter);
+router.use('/sauces', sauceRouter);
 
 router.all('/', (req, res) => {
     setTimeout(() => {
