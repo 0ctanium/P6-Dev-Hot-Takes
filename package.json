@@ -16,10 +16,9 @@
     "dev": "nodemon",
     "ts-report": "typescript-coverage-report",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'",
-    "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix"
-  },
-  "typeCoverage": {
-    "atLeast": 90
+    "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
+    "prepare": "husky install",
+    "pre-commit": "yarn lint && yarn ts-report"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -55,6 +54,7 @@
     "eslint-import-resolver-typescript": "^2.5.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
     "ts-node": "^10.4.0",

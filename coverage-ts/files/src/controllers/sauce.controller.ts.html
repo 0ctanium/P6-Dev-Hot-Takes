@@ -1,0 +1,267 @@
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>sauce.controller.ts</title>
+      <link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" type="text/css" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/mode/javascript/javascript.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.2/codemirror.min.css" type="text/css" rel="stylesheet">
+<script src="../../../assets/source-file.js" type="text/javascript" charset="utf-8"></script>
+<link href="../../../assets/source-file.css" type="text/css" rel="stylesheet">
+    </head>
+    <body>
+    <div style="margin-top:3em" class="ui container"><h1 class="ui header"><a href="../../../index.html">TypeScript coverage report</a></h1><table style="margin-top:2em" class="ui celled table"><thead class=""><tr class=""><th class="">Filename</th><th class="">Percent</th><th class="">Threshold</th><th class="">Total</th><th class="">Covered</th><th class="">Uncovered</th></tr></thead><tbody class=""><tr class="positive"><td class="">src/controllers/sauce.controller.ts</td><td class="">90.43%</td><td class="">80%</td><td class="">324</td><td class="">293</td><td class="">31</td></tr></tbody></table><textarea id="editor" readonly="" style="margin-top:3em">import { RequestHandler } from &#x27;express&#x27;;
+import { Types } from &#x27;mongoose&#x27;;
+import {
+    ApplicationError,
+    InternalError,
+    ResourceNotFoundError,
+} from &#x27;@errors&#x27;;
+import { joiErrorToMessage } from &#x27;@helpers&#x27;;
+import * as sauceService from &#x27;@services/sauce.service&#x27;;
+import { SauceInput } from &#x27;@types&#x27;;
+import { sauceInputSchema } from &#x27;@validators&#x27;;
+
+export const getAllSauces: RequestHandler = (req, res, next) =&gt; {
+    const { user } = req;
+
+    if (!user) {
+        return next(new ApplicationError(&#x27;Authentication required&#x27;, 401));
+    }
+    sauceService
+        .getAllSauces()
+        .then((sauces) =&gt; {
+            return res.status(200).json(sauces);
+        })
+        .catch((err) =&gt; {
+            return next(new InternalError(err));
+        });
+};
+
+export const getSauceById: RequestHandler&lt;{ sauceId: string }&gt; = (
+    req,
+    res,
+    next
+) =&gt; {
+    const { user } = req;
+    const { sauceId } = req.params;
+
+    if (!user) {
+        return next(new ApplicationError(&#x27;Authentication required&#x27;, 401));
+    }
+
+    sauceService
+        .getSauceById(sauceId)
+        .then((sauces) =&gt; {
+            return res.status(200).json(sauces);
+        })
+        .catch((err) =&gt; {
+            return next(new InternalError(err));
+        });
+};
+
+export const likeSauceById: RequestHandler&lt;{ sauceId: string }&gt; = (
+    req,
+    res,
+    next
+) =&gt; {
+    const { user, body } = req;
+    const { sauceId } = req.params;
+
+    if (!user) {
+        return next(new ApplicationError(&#x27;Authentication required&#x27;, 401));
+    }
+
+    let logic: Promise&lt;any&gt;;
+    switch (body.like) {
+        // Like
+        case 1:
+            logic = sauceService.likeSauceById(sauceId, user.sub);
+            break;
+        // Remove like/dislike
+        case 0:
+            logic = sauceService.removeLikeSauceById(sauceId, user.sub);
+            break;
+        // Dislike
+        case -1:
+            logic = sauceService.dislikeSauceById(sauceId, user.sub);
+            break;
+
+        // Throw error
+        default:
+            return next(
+                new ApplicationError(
+                    &#x27;Like is required and must be between -1 and 1&#x27;,
+                    400
+                )
+            );
+    }
+
+    // return next(new ApplicationError(&#x27;Test&#x27;));
+    logic
+        .then((sauces) =&gt; {
+            return res.status(200).json(sauces);
+        })
+        .catch((err) =&gt; {
+            return next(new InternalError(err));
+        });
+};
+
+export const createSauce: RequestHandler = (req, res, next) =&gt; {
+    const { body, file, user } = req;
+
+    if (!user) {
+        return next(new ApplicationError(&#x27;Authentication required&#x27;, 401));
+    }
+
+    if (!file) {
+        return next(new ApplicationError(&#x27;Image file is required&#x27;, 422));
+    }
+
+    const sauce: SauceInput =
+        body.sauce &amp;&amp; typeof body.sauce === &#x27;string&#x27;
+            ? JSON.parse(body.sauce)
+            : body;
+
+    if (!sauce) {
+        return next(new ApplicationError(&#x27;No sauce given&#x27;, 422));
+    }
+
+    const { value, error } = sauceInputSchema.validate(sauce);
+    if (error != null) {
+        return next(new ApplicationError(joiErrorToMessage(error), 422));
+    }
+
+    if (!value) {
+        return next(new ApplicationError(&#x27;Value is empty&#x27;, 400));
+    }
+
+    if (value.userId &amp;&amp; user.sub !== value.userId) {
+        return next(
+            new ApplicationError(&#x27;User id does not match the current user&#x27;, 403)
+        );
+    }
+    sauceService
+        .createSauce(value, file.path.replace(/^data\//g, &#x27;&#x27;), user.sub)
+        .then(() =&gt; {
+            return res.status(201).json({
+                message: &#x27;Sauce created successfully&#x27;,
+            });
+        })
+        .catch((err) =&gt; {
+            return next(new InternalError(err));
+        });
+};
+
+export const deleteSauceById: RequestHandler&lt;{ sauceId: string }&gt; = (
+    req,
+    res,
+    next
+) =&gt; {
+    const { user } = req;
+    const { sauceId } = req.params;
+
+    if (!user) {
+        return next(new ApplicationError(&#x27;Authentication required&#x27;, 401));
+    }
+
+    return sauceService.getSauceById(sauceId).then(async (sauce) =&gt; {
+        if (!sauce) {
+            return next(new ResourceNotFoundError(&#x27;Sauce&#x27;));
+        }
+
+        const userId =
+            sauce.userId instanceof Types.ObjectId
+                ? sauce.userId?.toString()
+                : sauce.userId?.id.toString();
+
+        if (user.sub !== userId) {
+            return next(
+                new ApplicationError(&#x27;Current user does not own the sauce&#x27;, 403)
+            );
+        }
+
+        return sauceService
+            .deleteSauce(sauce._id)
+            .then(() =&gt; {
+                return res.status(201).json({
+                    message: &#x27;Sauce deleted successfully&#x27;,
+                });
+            })
+            .catch((err) =&gt; {
+                return next(new InternalError(err));
+            });
+    });
+};
+
+export const editSauceById: RequestHandler = (req, res, next) =&gt; {
+    const { body, file, user } = req;
+    const { sauceId } = req.params;
+
+    if (!user) {
+        return next(new ApplicationError(&#x27;Authentication required&#x27;, 401));
+    }
+
+    const sauce: SauceInput =
+        body.sauce &amp;&amp; typeof body.sauce === &#x27;string&#x27;
+            ? JSON.parse(body.sauce)
+            : body;
+
+    if (!sauce) {
+        return next(new ApplicationError(&#x27;No sauce given&#x27;, 422));
+    }
+
+    const { value, error } = sauceInputSchema.validate(sauce);
+    if (error != null) {
+        return next(new ApplicationError(joiErrorToMessage(error), 422));
+    }
+
+    if (!value) {
+        return next(new ApplicationError(&#x27;Value is empty&#x27;, 400));
+    }
+
+    if (value.userId &amp;&amp; user.sub !== value.userId) {
+        return next(
+            new ApplicationError(&#x27;User id does not match the current user&#x27;, 403)
+        );
+    }
+
+    return sauceService.getSauceById(sauceId).then(async (sauce) =&gt; {
+        if (!sauce) {
+            return next(new ResourceNotFoundError(&#x27;Sauce&#x27;));
+        }
+
+        const userId =
+            sauce.userId instanceof Types.ObjectId
+                ? sauce.userId?.toString()
+                : sauce.userId?.id.toString();
+
+        if (user.sub !== userId) {
+            return next(
+                new ApplicationError(&#x27;Current user does not own the sauce&#x27;, 403)
+            );
+        }
+
+        return sauceService
+            .editSauce(
+                sauceId,
+                value,
+                user.sub,
+                file ? file.path.replace(/^data\//g, &#x27;&#x27;) : undefined
+            )
+            .then(() =&gt; {
+                return res.status(201).json({
+                    message: &#x27;Sauce created successfully&#x27;,
+                });
+            })
+            .catch((err) =&gt; {
+                return next(new InternalError(err));
+            });
+    });
+};
+</textarea><pre id="annotations" style="display:none">[{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:23,&quot;character&quot;:16,&quot;text&quot;:&quot;err&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:45,&quot;character&quot;:16,&quot;text&quot;:&quot;err&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:55,&quot;character&quot;:18,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:63,&quot;character&quot;:12,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:63,&quot;character&quot;:17,&quot;text&quot;:&quot;like&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:89,&quot;character&quot;:15,&quot;text&quot;:&quot;sauces&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:90,&quot;character&quot;:40,&quot;text&quot;:&quot;sauces&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:92,&quot;character&quot;:16,&quot;text&quot;:&quot;err&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:98,&quot;character&quot;:12,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:109,&quot;character&quot;:8,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:109,&quot;character&quot;:13,&quot;text&quot;:&quot;sauce&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:109,&quot;character&quot;:29,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:109,&quot;character&quot;:34,&quot;text&quot;:&quot;sauce&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:110,&quot;character&quot;:25,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:110,&quot;character&quot;:30,&quot;text&quot;:&quot;sauce&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:138,&quot;character&quot;:16,&quot;text&quot;:&quot;err&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:160,&quot;character&quot;:14,&quot;text&quot;:&quot;userId&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:163,&quot;character&quot;:32,&quot;text&quot;:&quot;id&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:165,&quot;character&quot;:25,&quot;text&quot;:&quot;userId&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:178,&quot;character&quot;:20,&quot;text&quot;:&quot;err&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:185,&quot;character&quot;:12,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:193,&quot;character&quot;:8,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:193,&quot;character&quot;:13,&quot;text&quot;:&quot;sauce&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:193,&quot;character&quot;:29,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:193,&quot;character&quot;:34,&quot;text&quot;:&quot;sauce&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:194,&quot;character&quot;:25,&quot;text&quot;:&quot;body&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:194,&quot;character&quot;:30,&quot;text&quot;:&quot;sauce&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:221,&quot;character&quot;:14,&quot;text&quot;:&quot;userId&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:224,&quot;character&quot;:32,&quot;text&quot;:&quot;id&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:226,&quot;character&quot;:25,&quot;text&quot;:&quot;userId&quot;,&quot;kind&quot;:1},{&quot;file&quot;:&quot;src/controllers/sauce.controller.ts&quot;,&quot;line&quot;:244,&quot;character&quot;:20,&quot;text&quot;:&quot;err&quot;,&quot;kind&quot;:1}]</pre></div>
+    <p class="footer-text">TypeScript Coverage Report generated by <a href="https://github.com/plantain-00/type-coverage">type-coverage</a> and <a href="https://github.com/alexcanessa/typescript-coverage-report">typescript-coverage-report</a> at Fri, 11 Feb 2022 00:44:33 GMT</p>
+    </body>
+  </html>
+  
