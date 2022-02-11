@@ -2,7 +2,7 @@ import { PopulatedDoc } from 'mongoose';
 import { BaseDocument, UserType } from '@types';
 
 export interface SauceType extends BaseDocument {
-    user: PopulatedDoc<UserType>;
+    userId: PopulatedDoc<UserType>;
     // Sauce name
     name: string;
     // Sauce manufacturer

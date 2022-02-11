@@ -3,7 +3,7 @@ import { SauceType } from '@types';
 
 export const SauceSchema = new Schema<SauceType>(
     {
-        user: { type: Schema.Types.ObjectId, ref: 'User' },
+        userId: { type: Schema.Types.ObjectId, ref: 'User' },
         name: {
             type: String,
             required: true,
@@ -38,16 +38,19 @@ export const SauceSchema = new Schema<SauceType>(
             default: 0,
             required: true,
         },
-        usersLiked: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-        usersDisliked: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        usersLiked: [
+            { type: Schema.Types.ObjectId, ref: 'User', unique: true },
+        ],
+        usersDisliked: [
+            { type: Schema.Types.ObjectId, ref: 'User', unique: true },
+        ],
     },
     { timestamps: true }
 );
 
-SauceSchema.pre('validate', function (next) {
+SauceSchema.post('init', function () {
     this.likes = this.usersLiked.length;
     this.dislikes = this.usersDisliked.length;
-    next();
 });
 
 export const Sauce = model<SauceType>('Sauce', SauceSchema);
