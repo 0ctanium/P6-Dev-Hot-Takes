@@ -56,7 +56,7 @@ export const removeLikeSauceById = async (id: string, userId: string) => {
     );
 };
 
-export const deleteSauce = async (sauceId) => {
+export const deleteSauce = async (sauceId: string) => {
     return Sauce.deleteOne({ _id: sauceId });
 };
 

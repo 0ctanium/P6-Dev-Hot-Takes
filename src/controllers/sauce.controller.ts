@@ -7,7 +7,7 @@ import {
 } from '@errors';
 import { joiErrorToMessage } from '@helpers';
 import * as sauceService from '@services/sauce.service';
-import { SauceInput } from '@types';
+import { SauceInput, SauceType } from '@types';
 import { sauceInputSchema } from '@validators';
 
 export const getAllSauces: RequestHandler = (req, res, next) => {
@@ -21,7 +21,7 @@ export const getAllSauces: RequestHandler = (req, res, next) => {
         .then((sauces) => {
             return res.status(200).json(sauces);
         })
-        .catch((err) => {
+        .catch((err: Error) => {
             return next(new InternalError(err));
         });
 };
@@ -43,7 +43,7 @@ export const getSauceById: RequestHandler<{ sauceId: string }> = (
         .then((sauces) => {
             return res.status(200).json(sauces);
         })
-        .catch((err) => {
+        .catch((err: Error) => {
             return next(new InternalError(err));
         });
 };
@@ -85,12 +85,11 @@ export const likeSauceById: RequestHandler<{ sauceId: string }> = (
             );
     }
 
-    // return next(new ApplicationError('Test'));
     logic
-        .then((sauces) => {
+        .then((sauces: SauceType) => {
             return res.status(200).json(sauces);
         })
-        .catch((err) => {
+        .catch((err: Error) => {
             return next(new InternalError(err));
         });
 };
@@ -136,7 +135,7 @@ export const createSauce: RequestHandler = (req, res, next) => {
                 message: 'Sauce created successfully',
             });
         })
-        .catch((err) => {
+        .catch((err: Error) => {
             return next(new InternalError(err));
         });
 };
@@ -154,11 +153,11 @@ export const deleteSauceById: RequestHandler<{ sauceId: string }> = (
     }
 
     return sauceService.getSauceById(sauceId).then(async (sauce) => {
-        if (!sauce) {
+        if (!sauce || !sauce._id) {
             return next(new ResourceNotFoundError('Sauce'));
         }
 
-        const userId =
+        const userId: string =
             sauce.userId instanceof Types.ObjectId
                 ? sauce.userId?.toString()
                 : sauce.userId?.id.toString();
@@ -170,7 +169,7 @@ export const deleteSauceById: RequestHandler<{ sauceId: string }> = (
         }
 
         return sauceService
-            .deleteSauce(sauce._id)
+            .deleteSauce(sauce._id.toString())
             .then(() => {
                 return res.status(201).json({
                     message: 'Sauce deleted successfully',
@@ -219,7 +218,7 @@ export const editSauceById: RequestHandler = (req, res, next) => {
             return next(new ResourceNotFoundError('Sauce'));
         }
 
-        const userId =
+        const userId: string =
             sauce.userId instanceof Types.ObjectId
                 ? sauce.userId?.toString()
                 : sauce.userId?.id.toString();
@@ -242,7 +241,7 @@ export const editSauceById: RequestHandler = (req, res, next) => {
                     message: 'Sauce created successfully',
                 });
             })
-            .catch((err) => {
+            .catch((err: Error) => {
                 return next(new InternalError(err));
             });
     });

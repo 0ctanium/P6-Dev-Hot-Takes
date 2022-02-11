@@ -1,5 +1,6 @@
 import { compare } from 'bcrypt';
 import { RequestHandler } from 'express';
+import { MongoError } from 'mongodb';
 import {
     ApplicationError,
     InternalError,
@@ -33,10 +34,14 @@ export const signUp: RequestHandler<unknown, ApiResponse, SignUpInput> = (
                 message: 'User created successfully',
             });
         })
-        .catch((err) => {
-            if (err.code === 11000) {
-                // Handle duplicates
-                return next(new ApplicationError('User already exists', 409));
+        .catch((err: Error) => {
+            if (err instanceof MongoError) {
+                if (err.code === 11000) {
+                    // Handle duplicates
+                    return next(
+                        new ApplicationError('User already exists', 409)
+                    );
+                }
             }
 
             return next(new InternalError(err));

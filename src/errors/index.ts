@@ -12,10 +12,10 @@ export class ApplicationError extends Error {
     }
 }
 
-export class ResourceNotFoundError extends ApplicationError {
-    private data: { resource: string; query?: any };
+export class ResourceNotFoundError<Q = unknown> extends ApplicationError {
+    private data: { resource: string; query?: Q };
 
-    constructor(resource: string, query?: any) {
+    constructor(resource: string, query?: Q) {
         super(`Resource ${resource} was not found.`, 404);
         this.data = { resource, query };
     }
