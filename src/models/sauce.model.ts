@@ -38,12 +38,8 @@ export const SauceSchema = new Schema<SauceType>(
             default: 0,
             required: true,
         },
-        usersLiked: [
-            { type: Schema.Types.ObjectId, ref: 'User', unique: true },
-        ],
-        usersDisliked: [
-            { type: Schema.Types.ObjectId, ref: 'User', unique: true },
-        ],
+        usersLiked: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+        usersDisliked: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     },
     { timestamps: true }
 );
