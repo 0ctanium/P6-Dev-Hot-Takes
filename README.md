@@ -41,3 +41,17 @@ yarn start
 ```bash
 yarn dev
 ```
+
+
+## Configuration
+
+All environment variables must be set in the `.env` file
+
+| Name            | Description                                                                                                                | Type                            | Required | Default Value |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------|---------------------------------|----------|---------------|
+| DB_URI          | MongoDB URI (https://docs.mongodb.com/manual/reference/connection-string/)                                                 | string                          | **YES**  |               |
+| PORT            | HTPP port the web server will be exposed                                                                                   | number                          | NO       | 3000          |
+| DATA_DIR        | Directory the images will be saved into                                                                                    | string                          | NO       | data/images/  |
+| TOKEN_SECRET    | Authentication encryption key                                                                                              | string                          | **YES**  |               |
+| TOKEN_EXPIRY    | Session validity time                                                                                                      | number                          | NO       | 86400 (24h)   |
+| TOKEN_ALGORITHM | The algorithm JWT will use to encrypt tokens (https://www.scottbrady91.com/jose/jwts-which-signing-algorithm-should-i-use) | jsonwebtoken.Algorithm (string) | NO       | HS256         |
