@@ -12,13 +12,14 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsc && tsc-alias",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc && tsc-alias",
     "dev": "nodemon",
     "ts-report": "typescript-coverage-report",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{js,ts,tsx}' --quiet --fix",
     "prepare": "husky install",
-    "pre-commit": "yarn lint"
+    "pre-commit": "npm run lint"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

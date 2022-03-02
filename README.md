@@ -5,14 +5,9 @@
 ## Installation
 
 ### Install dependencies
-With yarn (prefer yarn)
 ```bash
-yarn install
-```
-
-With npm
-```bash
-npm install
+yarn install # with yarn
+npm install # with npm
 ```
 
 ### Configure environement variables
@@ -30,16 +25,19 @@ Edit variable with correct values in the `.env` file
 
 Build distant files
 ```bash
-yarn build
+yarn build # with yarn
+npm run build # with npm
 ```
 
 Start the server
 ```bash
-yarn start
+yarn start # with yarn
+npm start # with npm
 ```
 ### Start dev server
 ```bash
-yarn dev
+yarn dev # with yarn
+npm run dev # with npm
 ```
 
 
