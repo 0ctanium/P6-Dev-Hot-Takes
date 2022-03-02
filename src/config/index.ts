@@ -1,3 +1,5 @@
+import { Algorithm } from 'jsonwebtoken';
+
 export const DB_URI = process.env.DB_URI as string;
 
 if (!DB_URI) {
@@ -30,6 +32,9 @@ function normalizePort(val: string) {
     return false;
 }
 
+export const DATA_DIR: string = process.env.DATA_DIR || 'data/images/';
+
 export const PORT = normalizePort(process.env.PORT || '3000');
 
-export const TOKEN_ALGORITHM = 'HS256';
+export const TOKEN_ALGORITHM =
+    (process.env.TOKEN_ALGORITHM as Algorithm) || 'HS256';
