@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "node dist/index.js",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "dev": "nodemon",
     "ts-report": "typescript-coverage-report",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'",
@@ -58,6 +58,7 @@
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
     "ts-node": "^10.4.0",
+    "tsc-alias": "^1.6.3",
     "type-coverage": "^2.21.0",
     "typescript": "^4.5.5",
     "typescript-coverage-report": "^0.6.4"
