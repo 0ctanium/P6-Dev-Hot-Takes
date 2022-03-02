@@ -1,0 +1,19 @@
+version: '3'
+services:
+  node:
+    container_name: api
+    depends_on:
+      - mongodb
+    restart: always
+    build: .
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    volumes:
+      - ./data/images:/opt/node/data/images
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    volumes:
+      - ./data/db:/data/db
